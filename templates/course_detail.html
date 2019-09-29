@@ -1,0 +1,129 @@
+{% extends 'index.html' %}
+{% load static %}
+{% load crispy_forms_filters %}
+
+{% block content %}
+    <div class="container">
+    <h1 class="text-center">{{ course.title }}</h1>
+    <hr>
+    <p class="text-center"><img src="{{ course.image.url }}" width='60%'></p>
+    {{ course.content|safe }}
+    <p class="add_to_favourites-{{ course.slug }}">
+        {%  if course in current_user.favorite_course.all %}
+             <button class="btn btn-default disabled">Курс куплен</button>
+        {% else %}
+           <a href="#" class="course" data-slug="{{ course.slug }}"> <button class="btn btn-danger">Купить курс</button></a>
+        {% endif %}
+    </p>
+    <p class="course_added-{{ course.slug }}"></p>
+    <h2>Комментарий: </h2>
+        <div class="col-sm-12 new_comment">
+
+                </div>
+    {% for comment in course_comments %}
+        <div class="col-sm-12">
+            {{ comment.author.username }}
+           <p> {{ comment.comment }}</p>
+            {{ comment.timestamp|date:"Y-m-d" }}
+            <br>
+        </div>
+    {% endfor %}
+        <form action="" method="POST" novalidate>
+            <input type="hidden" id="course" data-id="{{ course.id }}">
+            {{ form.error }}
+            {% csrf_token %}
+            {{ form|crispy }}
+            <input type="submit" value="Добавить комментарий" id="add_comment">
+        </form>
+
+
+
+
+    </div>
+<footer></footer>
+
+{% block jquery %}
+ <script type='text/javascript' src="{% static 'js/jquery.js' %}"></script>
+    <script>
+   $(document).ready(function () {
+
+       function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getCookie('csrftoken');
+       $('#add_comment').on('click', function (e) {
+           e.preventDefault()
+           var course_id = $("#course").attr('data-id')
+           var comment = $("#id_comment").val()
+
+           data = {
+               course_id: course_id,
+               comment: comment,
+               csrfmiddlewaretoken: csrftoken
+           }
+
+           $.ajax({
+               type: "POST",
+               url: "{% url 'add_comment' %}",
+               dataType: 'json',
+               data:data,
+               success: function(data){
+                   $.each(data, function(field) {
+                       $('.new_comment').prepend('<hr><small>'+data[field]['author']+
+                       '</small><p>'+data[field]['comment']+'</p><small>'+ data[field]['timestamp']+'</small>')
+                        $('#id_comment').val('')
+                   })
+
+               }
+           })
+
+
+
+       })
+
+   })
+</script>
+
+    <script>
+    $(document).ready(function () {
+        $('.course').on('click', function (e) {
+            e.preventDefault()
+            var course_slug = $(this).attr('data-slug')
+            data={
+                course_slug:course_slug
+            }
+
+            $.ajax({
+                type:"GET",
+                url: '{% url 'add_to_favourites' %}',
+                dataType: 'json',
+                data: data,
+                success: function (data) {
+                    $('.add_to_favourites-'+course_slug).css('display', 'none')
+                    $('.course_added-'+course_slug).html('<button class="btn btn-default disabled">Курс куплен</button>')
+
+
+                }
+            })
+
+        })
+    })
+    </script>
+
+{% endblock jquery %}
+
+{% endblock content %}
+
+

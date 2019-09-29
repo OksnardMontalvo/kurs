@@ -1,0 +1,15 @@
+{% extends 'index.html' %}
+
+{% block content %}
+    <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3>Найденные результаты: {{ founded_courses.count }}</h3>
+                    {% for course in founded_courses %}
+                        <h4><a href="{{ course.get_absolute_url }}">{{ course.title }}</a></h4>
+                        <p>{{ course.content|truncatewords:30 }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+    </div>
+{% endblock content %}

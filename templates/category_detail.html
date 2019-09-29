@@ -1,0 +1,26 @@
+{% extends 'index.html' %}
+{% block content %}
+    <div class="container">
+<h2>Курсы по теме: {{ category.name }}</h2>
+        <hr>
+        {% for course in courses_from_category %}
+   <div class="row">
+            <div class="col-sm-12" style="margin-bottom: 15px">
+
+                    <div class="col-sm-4">
+                     <img src="{{ course.image.url }}" width="300px" height="200px">
+                    </div>
+
+                <div class="col-sm-8">
+                     <h2 class="text-center">{{ course.title }}</h2>
+                     <p>{{ course.content|truncatewords:15 }}</p>
+                    <a href="{{ course.get_absolute_url }}"><button class="btn btn-primary" style="background-color:#e05a00; border-color: #e05a00 ">Открыть курс</button></a>
+                 </div>
+
+
+            </div>
+
+   </div>
+    {% endfor %}
+    </div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'index.html' %}
+{% block content %}
+<div class="container">
+<h3 class="text-center">Личный кабинет {{ current_user.user }}</h3>
+    <hr>
+<div class="row">
+    <div class="col-sm-4">
+        <h4>Личная информация</h4>
+        <p>Логин: {{ current_user.user }}</p>
+        <p>Имя: {{ current_user.first_name}}</p>
+        <p>Фамилия: {{ current_user.last_name }}</p>
+        <p>Email: {{ current_user.email }}</p>
+    </div>
+    <div class="col-sm-8">
+        <h4 class="text-center"><strong>Ваши курсы</strong></h4>
+        <ul class="button-group">
+            {% for course in current_user.favourite_courses.all %}
+            <li class="list-group-item"><a href="{{ course.get_absolute_url }}" style="text-decoration: none;">{{ course.title }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+</div>
+
+{% endblock content %}
